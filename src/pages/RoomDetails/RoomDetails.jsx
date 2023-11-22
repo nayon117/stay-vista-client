@@ -30,7 +30,7 @@ const RoomDetails = () => {
       <Helmet>
         <title>{room?.title}</title>
       </Helmet>
-      <div className="max-w-screen-lg mx-auto">
+     {room && <div className="max-w-screen-lg mx-auto">
         <div className="flex flex-col gap-6">
           {/* header */}
           <Header room={room}></Header>
@@ -40,11 +40,10 @@ const RoomDetails = () => {
           <RoomInfo room={room}></RoomInfo>
           <div className="md:col-span-3 order-first md:order-last">
             {/* calender */}
-             <RoomReservation></RoomReservation>
-           </div>
+            <RoomReservation room={room}></RoomReservation>
+          </div>
         </div>
-      
-      </div>
+      </div>}
     </Container>
   );
 };
