@@ -4,9 +4,11 @@ import { imageUpload } from "../../api/utils";
 import useAuth from "../../hooks/useAuth";
 import { getToken, saveUser } from "../../api/auth";
 import toast from "react-hot-toast";
+import { TbFidgetSpinner } from "react-icons/tb";
 
 const SignUp = () => {
-  const {createUser,updateUserProfile,signInWithGoogle } = useAuth();
+  const { createUser, updateUserProfile, signInWithGoogle, loading } =
+    useAuth();
   const navigate = useNavigate();
 
   // form submit handler
@@ -35,14 +37,35 @@ const SignUp = () => {
       // get token
       await getToken(result?.user?.email);
 
-      navigate('/')
-      toast.success("sign up successfull");
-
+      navigate("/");
+      toast.success("sign up successful");
     } catch (error) {
       console.log(error);
-      toast.error(error?.message)
+      toast.error(error?.message);
     }
   };
+
+  //  google sign in
+  const handleGoogleLogin = async () => {
+    try {
+      // create user
+      const result = await signInWithGoogle();
+
+      // save user in database
+      const dbResponse = await saveUser(result?.user);
+      console.log(dbResponse);
+
+      // get token
+      await getToken(result?.user?.email);
+
+      navigate("/");
+      toast.success("sign up successful");
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.message);
+    }
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen">
       <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900">
@@ -119,7 +142,11 @@ const SignUp = () => {
               type="submit"
               className="bg-rose-500 w-full rounded-md py-3 text-white"
             >
-              Continue
+              {loading ? (
+                <TbFidgetSpinner className="animate-spin m-auto"></TbFidgetSpinner>
+              ) : (
+                " Continue"
+              )}
             </button>
           </div>
         </form>
@@ -130,7 +157,7 @@ const SignUp = () => {
           </p>
           <div className="flex-1 h-px sm:w-16 dark:bg-gray-700"></div>
         </div>
-        <div className="flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer">
+        <div onClick={handleGoogleLogin} className="flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer">
           <FcGoogle size={32} />
 
           <p>Continue with Google</p>
