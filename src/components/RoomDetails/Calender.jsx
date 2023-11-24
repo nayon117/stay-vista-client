@@ -1,18 +1,16 @@
 /* eslint-disable react/prop-types */
 import { DateRange } from 'react-date-range'
 
-const Calender = ({value} ) => {
+const Calender = ({ value, handleDateChange }) => {
   return (
     <DateRange
-      rangeColors={['#F43F5E']}
       ranges={[value]}
-    //   onChange={handleSelect}
-    //   date={value.startDate}
+      rangeColors={['#F43F5E']}
       direction='vertical'
       showDateDisplay={false}
-    //   minDate={value.startDate}
-    //   maxDate={value.endDate}
+      onChange={handleDateChange}
     />
-  );
-};
-export default Calender;
+  )
+}
+
+export default Calender

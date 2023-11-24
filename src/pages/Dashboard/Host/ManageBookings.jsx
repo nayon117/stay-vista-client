@@ -1,24 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
-import { getHostRooms } from '../../../api/rooms'
 import useAuth from '../../../hooks/useAuth'
-import RoomDataRow from '../../../components/Dashboard/TableRow/RoomDataRow'
+import { getHostBookings } from '../../../api/bookings'
+import Loader from '../../../components/Shared/Loader'
+import TableRow from '../../../components/Dashboard/TableRow/TableRow'
 
-const MyListings = () => {
-  const [rooms, setRooms] = useState([])
-  const {user} = useAuth()
-  
-  useEffect(() => {
-    getHostRooms(user?.email)
-      .then(data => {
-      setRooms(data);
-    })
-  },[user?.email])
+const ManageBookings = () => {
 
+  const { user, loading } = useAuth()
+  const {
+    data: bookings = [],
+    isLoading,
+    // refetch,
+  } = useQuery({
+    queryKey: ['bookings', user?.email],
+    enabled: !loading,
+    queryFn: async () => await getHostBookings(user?.email),
+  })
+  if (isLoading) return <Loader />
   return (
     <>
       <Helmet>
-        <title>My Listings</title>
+        <title>Manage Bookings</title>
       </Helmet>
 
       <div className='container mx-auto px-4 sm:px-8'>
@@ -38,7 +41,7 @@ const MyListings = () => {
                       scope='col'
                       className='px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal'
                     >
-                      Location
+                      Guest Info
                     </th>
                     <th
                       scope='col'
@@ -62,20 +65,15 @@ const MyListings = () => {
                       scope='col'
                       className='px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal'
                     >
-                      Delete
-                    </th>
-                    <th
-                      scope='col'
-                      className='px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal'
-                    >
-                      Update
+                      Action
                     </th>
                   </tr>
                 </thead>
-                <tbody>{/* Room row data */}
-                  {
-                    rooms?.map(room=><RoomDataRow key={room._id} room={room}></RoomDataRow>)
-                  }
+                <tbody>{/* Table row data */}
+                {bookings &&
+                    bookings.map(booking => (
+                      <TableRow key={booking._id} booking={booking} />
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -86,4 +84,4 @@ const MyListings = () => {
   )
 }
 
-export default MyListings
+export default ManageBookings
